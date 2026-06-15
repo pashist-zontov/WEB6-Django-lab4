@@ -1,0 +1,152 @@
+{% extends 'app_core/base.html' %}
+{% block content %}
+
+<!-- Заголовок -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Панель модератора</h2>
+    <a href="{% url 'request_create' %}" class="btn btn-primary">
+        Создать заявку
+    </a>
+</div>
+
+<!-- Статистика -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Всего заявок</h5>
+                <h2>{{ stats.total }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Новые</h5>
+                <h2>{{ stats.new }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">В процессе</h5>
+                <h2>{{ stats.in_progress }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Обработано</h5>
+                <h2>{{ stats.finished }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Фильтры -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Фильтры</h5>
+        <form method="get" class="row g-3">
+            <div class="col-auto">
+                <select name="status" class="form-select">
+                    <option value="">Все статусы</option>
+                    <option value="NEW" {% if current_filter == 'NEW' %}selected{% endif %}>Новые</option>
+                    <option value="IN_PROGRESS" {% if current_filter == 'IN_PROGRESS' %}selected{% endif %}>В процессе</option>
+                    <option value="FINISHED" {% if current_filter == 'FINISHED' %}selected{% endif %}>Обработанные</option>
+                    <option value="CLOSED" {% if current_filter == 'CLOSED' %}selected{% endif %}>Закрытые</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Применить</button>
+                <a href="{% url 'mod_panel' %}" class="btn btn-secondary">Сбросить</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Таблица заявок -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Список заявок</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px;">ID</th>
+                        <th style="width: 200px">Тема</th>
+                        <th style="width: 150px;">Автор</th>
+                        <th style="width: 130px;">Статус</th>
+                        <th style="width: 140px;">Обновлено</th>
+                        <th style="width: 100px;">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td><strong>#{{ req.id }}</strong></td>
+                        <td>
+                            <a href="{% url 'request_detail' req.pk %}" class="text-decoration-none">
+                                {{ req.title }}
+                            </a>
+                            {% if req.comments.count > 0 %}
+                                <span class="badge bg-secondary ms-2">{{ req.comments.count }} 💬</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ req.owner.username }}</small><br>
+                            <small class="text-muted">{{ req.owner.department|default:"—" }}</small>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if req.status == 'NEW' %}bg-info
+                                {% elif req.status == 'IN_PROGRESS' %}bg-warning
+                                {% elif req.status == 'FINISHED' %}bg-success
+                                {% else %}bg-secondary{% endif %}">
+                                {{ req.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <small>{{ req.updated_at|date:"d.m.Y" }}</small><br>
+                            <small class="text-muted">{{ req.updated_at|time:"H:i" }}</small>
+                        </td>
+                        <td>
+                            <!-- Кнопка просмотра -->
+                            <a href="{% url 'request_detail' req.pk %}" 
+                               class="btn btn-sm btn-outline-primary mb-1 w-100">
+                                Открыть
+                            </a>
+                            
+                            <!-- Форма смены статуса -->
+                            <form method="post" action="{% url 'change_status' req.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <select name="status" class="form-select form-select-sm mb-1" 
+                                        onchange="this.form.submit()">
+                                    <option value="">Сменить статус</option>
+                                    {% for value, label in req.STATUS_CHOICES %}
+                                        {% if value != req.status %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            Заявок не найдено
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

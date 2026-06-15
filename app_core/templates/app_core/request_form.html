@@ -1,0 +1,10 @@
+{% extends 'app_core/base.html' %}
+{% block content %}
+<h2>{{ title }}</h2>
+<form method="post" enctype="multipart/form-data" class="mt-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Сохранить</button>
+    <a href="{% url 'request_list' %}" class="btn btn-bm ms-2" style="color: black; border: 1px solid black">Отмена</a>
+</form>
+{% endblock %}

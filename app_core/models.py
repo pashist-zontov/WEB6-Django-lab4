@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
     # В абстрактном классе пользователя имеются базовые и некоторые дополнительные данные
     # Здесь мы добавляем новые поля для этой модели
     department = models.CharField(max_length=100, blank=True, verbose_name="Департамент/Отдел")
-    position = models.CharField(max_length=100, blank=True, verbose_name="Должность")
+    position = models.CharField(max_length=100, blank=True, verbose_name="Звание")
     
     class Meta:
         db_table = "portal_User" # - смена на собственное имя таблицы
@@ -26,7 +26,7 @@ class UserSettings(models.Model):
     email_notifs = models.BooleanField(db_default=True)
 
     def __str__(self):
-        return f'Настройки пользователя {self.user.username} [{self.user.pk}]'
+        return f'Настройки пользователя {self.user.username}'
 
     class Meta:
         verbose_name_plural = "Найстройки пользователей"

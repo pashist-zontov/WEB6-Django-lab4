@@ -10,7 +10,7 @@ from django.core.cache import cache
 import logging
 
 
-request_id_var: ContextVar[str] = ContextVar('request_id', default='no-request-id') # Тарабарщина. Разобраться бы.
+request_id_var: ContextVar[str] = ContextVar('request_id', default='no-request-id')
 
 """КЛАСС СБОРА ИНФОРМАЦИИ О ЗАПРОСЕ В request_id"""
 class RequestIDMiddleware:

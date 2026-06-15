@@ -13,7 +13,7 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ['author', 'created_at']
 
 
-class RequestSerializer:
+class RequestSerializer(serializers.ModelSerializer):
     owner_name = serializers.CharField(source='owner.username', read_only=True)
 
     # Подсчёт комментариев к заявке

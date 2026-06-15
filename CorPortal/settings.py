@@ -175,3 +175,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # МОИ ВНЕДРЕНИЯ
 
 AUTH_USER_MODEL = "app_core.CustomUser"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+LANGUAGE_CODE = 'ru'
+TIME_ZONE = 'Asia/Vladivostok'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'

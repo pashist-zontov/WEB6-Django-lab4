@@ -1,0 +1,61 @@
+{% extends 'app_core/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Заявка #{{ request.id }}: {{ request.title }}</h4>
+                <span class="badge bg-primary">{{ request.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <p><strong>Автор:</strong> {{ request.owner.username }}</p>
+                <p><strong>Дата создания:</strong> {{ request.created_at|date:"d.m.Y H:i" }}</p>
+                <p><strong>Описание:</strong><br>{{ request.description|linebreaks }}</p>
+                {% if request.file %}
+                    <p><strong>Файл:</strong> <a href="{{ request.file.url }}" target="_blank">Скачать файл</a></p>
+                {% endif %}
+                
+                {% if user == request.owner or user.is_superuser %}
+                    <a href="{% url 'request_edit' request.pk %}" class="btn btn-warning btn-sm mt-3">Редактировать</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <h5>Комментарии</h5>
+        <form method="post" class="mb-4">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-2">Отправить комментарий</button>
+        </form>
+
+        {% for comment in request.comments.all %}
+        <div class="card mb-2 bg-light">
+            <div class="card-body">
+                <p class="mb-1"><strong>{{ comment.author.username }}</strong> <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small></p>
+                <p class="mb-0">{{ comment.text|linebreaks }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">Комментариев пока нет.</p>
+        {% endfor %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">История изменений</div>
+            <ul class="list-group list-group-flush">
+                {% for h in request.history.all %}
+                <li class="list-group-item">
+                    <small class="text-muted">{{ h.created_at|date:"d.m H:i" }}</small><br>
+                    <strong>{{ h.user.username|default:"Система" }}</strong>: {{ h.action }}
+                    <span>Подробнее: {{ h.details.message }}</span>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-muted">История пуста</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<a href="{% url 'request_list' %}" class="btn btn-secondary mt-3">← Назад к списку</a>
+{% endblock %}

@@ -41,14 +41,14 @@ class RequestForm(forms.ModelForm):
         return file
     
 
-    class CommentForm(forms.ModelForm):
-        class Meta:
-            model = Comment
-            fields = ['text']
-            widgets = {
-                'text': forms.Textarea(attrs={
-                    'class': 'form-control',
-                    'rows': 3,
-                    'placeholder': "Напишите комментарий к вашей проблеме..."
-                })
-            }
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': "Напишите комментарий к вашей проблеме..."
+            })
+        }
